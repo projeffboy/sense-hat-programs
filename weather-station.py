@@ -1,8 +1,11 @@
+# JOYSTICK CONTROLS
+## Press down to turn off/on
+## Left/Right to switch modes
+
 from sense_hat import SenseHat, ACTION_PRESSED, ACTION_HELD, ACTION_RELEASED
 import time
 import signal
 import sys
-import pdb
 from enum import Enum
 
 # Ctrl-C Handler
@@ -26,7 +29,7 @@ class Mode(Enum):
 mode = Mode.CLOCK
 prev_mode = Mode.OFF
 
-
+# Joystick Controls
 def pushed_middle(event):
     if event.action == ACTION_PRESSED:
         global mode, prev_mode
@@ -136,7 +139,7 @@ C = [
 ]
 temp_color = [255, 255, 0] # yellow
 temp_sign_color = [255, 0, 0] # red
-calibration = 7
+calibration = 7 # decrease the temperature recorded to offset CPU heat
 
 # Humidity Variables
 percent_symbol = [
@@ -162,8 +165,9 @@ def setColorToPx(flattened_pixels, color1, color2):
         else:
             flattened_pixels[i] = [0, 0, 0] # no color
 
+# Actual Meat of the Code
 while True:
-    pixels = [[0] * 8 for _ in range(8)]
+    pixels = [[0] * 8 for _ in range(8)] # 8x8 array
     
     if mode == Mode.CLOCK:
         hour = time.localtime().tm_hour
@@ -185,6 +189,7 @@ while True:
         sense.set_pixel(0, 6, 255, 20, 147)
         time.sleep(1)
     elif mode == Mode.TEMP:
+        # get the average of the two temperatures
         temp = int((sense.get_temperature_from_humidity() + sense.get_temperature_from_pressure()) / 2 - calibration)
         
         for row in range(4):
